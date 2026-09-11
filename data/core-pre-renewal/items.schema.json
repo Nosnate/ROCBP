@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ragnarok Online item record",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "aegisName", "name", "type", "slots", "applicableJobs", "equipLocations", "bonuses", "script", "metadata"],
+    "properties": {
+      "id": { "type": "integer", "minimum": 1 },
+      "aegisName": { "type": "string", "minLength": 1 },
+      "name": { "type": "string", "minLength": 1 },
+      "type": { "enum": ["usable", "weapon", "armor", "garment", "card", "ammunition", "etc"] },
+      "slots": { "type": "integer", "minimum": 0, "maximum": 4 },
+      "applicableJobs": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+      "equipLocations": { "type": "array", "items": { "type": "string" } },
+      "bonuses": { "type": "array", "items": { "type": "object", "required": ["kind"], "properties": { "kind": { "type": "string" }, "stat": { "type": "string" }, "value": { "type": "number" } } } },
+      "script": { "type": "string", "description": "Canonical emulator item script; preserve verbatim for server export." },
+      "metadata": { "type": "object", "required": ["isCustom", "source"], "properties": { "isCustom": { "type": "boolean" }, "source": { "type": "string" } } }
+    },
+    "additionalProperties": true
+  }
+}

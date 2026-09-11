@@ -1,0 +1,1 @@
+{"name":"ro-nexus","private":true,"type":"module","scripts":{"test":"node --test"}}
