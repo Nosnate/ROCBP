@@ -1,54 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#15181d">
-  <title>RO Build Planner — uaRO</title>
-  <meta name="description" content="Server-aware Pre-Renewal Ragnarok Online build planner for uaRO and future private servers.">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090d16"><title>RO Nexus</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand"><div class="brand-mark">RO</div><div><strong>RO Build Planner</strong><span>Pre-Renewal • Server-aware • English</span></div></div>
-    <div class="top-actions">
-      <label>Server <select id="serverSelect"></select></label>
-      <button id="newBuildBtn">New</button><button id="saveBtn" class="primary">Save</button><button id="loadBtn">Load</button><button id="shareBtn">Share</button>
-    </div>
-  </header>
-
-  <main class="layout">
-    <aside class="sidebar">
-      <div class="side-section">
-        <label>Build name<input id="buildName" placeholder="e.g. Solo MVP Lord Knight"></label>
-        <label>Author / handle<input id="author" placeholder="optional"></label>
-      </div>
-      <nav class="tabs" aria-label="Planner sections">
-        <button data-tab="overview" class="active">Overview</button><button data-tab="stats">Stats</button><button data-tab="skills">Skills</button><button data-tab="gear">Equipment</button><button data-tab="database">Database</button><button data-tab="notes">Build Notes</button><button data-tab="share">Share</button>
-      </nav>
-      <div class="side-section server-info"><div class="eyebrow">Active dataset</div><strong id="serverName">uaRO</strong><span id="serverVersion">Pre-Renewal</span><p id="serverSummary"></p></div>
-    </aside>
-
-    <section class="content">
-      <div id="status" class="status" hidden></div>
-      <section id="tab-overview" class="tab-panel active"></section>
-      <section id="tab-stats" class="tab-panel"></section>
-      <section id="tab-skills" class="tab-panel"></section>
-      <section id="tab-gear" class="tab-panel"></section>
-      <section id="tab-database" class="tab-panel"></section>
-      <section id="tab-notes" class="tab-panel"></section>
-      <section id="tab-share" class="tab-panel"></section>
-    </section>
-  </main>
-
-  <dialog id="loadDialog"><form method="dialog" class="dialog"><div class="dialog-head"><h3>Saved builds</h3><button value="cancel">×</button></div><div id="savedBuilds"></div></form></dialog>
-  <dialog id="shareDialog"><div class="dialog wide"><div class="dialog-head"><h3>Share build</h3><button id="closeShare">×</button></div><div class="share-grid"><div><div class="share-preview" id="sharePreview"></div><button id="downloadPreview">Download preview PNG</button></div><div class="share-fields"><label>Share URL<input id="shareUrl" readonly></label><button id="copyUrl">Copy URL</button><label>Discord / Markdown<textarea id="markdownOut" rows="5" readonly></textarea></label><button id="copyMarkdown">Copy Markdown</button><label>Forum / BBCode<textarea id="bbcodeOut" rows="7" readonly></textarea></label><button id="copyBBCode">Copy BBCode</button></div></div><p class="muted">Prototype mode: the URL contains the build payload. A future hosted backend can turn this into permanent build IDs and real Discord/Open Graph previews.</p></div></dialog>
-
-  <script src="data/core-pre-renewal/classes.js"></script>
-  <script src="data/core-pre-renewal/skills.js"></script>
-  <script src="data/core-pre-renewal/items.js"></script>
-  <script src="data/i18n/en.js"></script>
-  <script src="data/servers/uaro/index.js"></script>
-  <script src="app.js"></script>
+  <div id="app"></div>
+  <!-- Classic scripts intentionally support opening index.html directly via file://. -->
+  <script src="data/core-pre-renewal/items.data.js"></script>
+  <script src="data/repository.js"></script><script src="src/calculator.js"></script>
+  <script src="src/router.js"></script><script src="src/auth.js"></script><script src="src/database.js"></script>
+  <script src="src/main.js"></script>
 </body>
 </html>
