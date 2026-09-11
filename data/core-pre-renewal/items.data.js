@@ -1,5 +1,11 @@
-/* Runtime copy of items.json. Classic script avoids fetch() and works from file://. */
+/* Runtime mirror of items.json; classic script avoids forbidden file:// fetches. */
 window.RO_CORE_ITEMS = [
-  { id: 501, aegisName: 'Red_Potion', name: 'Red Potion', type: 'usable', subtype: 'healing', slots: 0, weight: 70, buy: 50, sell: 25, applicableJobs: ['all'], equipLocations: [], bonuses: [], script: 'itemheal 45,60;', metadata: { isCustom: false, source: 'core-pre-renewal' } },
-  { id: 1101, aegisName: 'Sword', name: 'Sword [3]', type: 'weapon', weaponLevel: 1, attack: 25, slots: 3, weight: 500, applicableJobs: ['novice', 'swordman', 'knight', 'lord_knight', 'crusader', 'paladin'], equipLocations: ['weapon'], bonuses: [{ kind: 'stat', stat: 'ATK', value: 25 }], script: '', metadata: { isCustom: false, source: 'core-pre-renewal' } }
+  {id:501,aegisName:'Red_Potion',name:'Red Potion',type:'usable',subtype:'healing',slots:0,weight:70,buy:50,sell:25,applicableJobs:['all'],equipLocations:[],bonuses:[],script:'itemheal 45,60;',metadata:{isCustom:false,source:'core-pre-renewal'}},
+  {id:1101,aegisName:'Sword',name:'Sword [3]',type:'weapon',weaponLevel:1,attack:25,slots:3,weight:500,applicableJobs:['novice','swordman','knight','lord_knight','crusader','paladin'],equipLocations:['weapon'],bonuses:[{kind:'stat',stat:'ATK',value:25}],script:'',metadata:{isCustom:false,source:'core-pre-renewal'}},
+  {id:1208,aegisName:'Stiletto',name:'Stiletto [3]',type:'weapon',weaponLevel:2,attack:87,slots:3,weight:70,applicableJobs:['thief','assassin','assassin_cross','rogue','stalker'],equipLocations:['weapon'],bonuses:[],script:'',metadata:{isCustom:false,source:'core-pre-renewal'}},
+  {id:2302,aegisName:'Cotton_Shirt',name:'Cotton Shirt [1]',type:'armor',slots:1,defense:1,weight:10,applicableJobs:['all'],equipLocations:['armor'],bonuses:[],script:'',metadata:{isCustom:false,source:'core-pre-renewal'}},
+  {id:2201,aegisName:'Sunglasses',name:'Sunglasses [1]',type:'armor',subtype:'headgear',slots:1,defense:0,weight:10,applicableJobs:['all'],equipLocations:['head_top'],bonuses:[],script:'',metadata:{isCustom:false,source:'core-pre-renewal'}},
+  {id:2501,aegisName:'Hood',name:'Hood [1]',type:'garment',slots:1,defense:1,weight:20,applicableJobs:['all'],equipLocations:['garment'],bonuses:[],script:'',metadata:{isCustom:false,source:'core-pre-renewal'}},
+  {id:2601,aegisName:'Sandals',name:'Sandals [1]',type:'armor',subtype:'shoes',slots:1,defense:1,weight:20,applicableJobs:['all'],equipLocations:['shoes'],bonuses:[],script:'',metadata:{isCustom:false,source:'core-pre-renewal'}},
+  {id:4001,aegisName:'Poring_Card',name:'Poring Card',type:'card',slots:0,weight:1,applicableJobs:['all'],equipLocations:[],bonuses:[{kind:'stat',stat:'LUK',value:2}],script:'bonus bLuk,2;',metadata:{isCustom:false,source:'core-pre-renewal'}}
 ];

@@ -3,37 +3,23 @@ const { installRouter, parseRoute } = window.RORouter;
 const { databaseView, bindDatabaseSearch } = window.RODatabase;
 const { isAdmin, signIn, signOut, session } = window.ROAuth;
 const { JsonRepository } = window.RORepository;
-
 const profile = { id: 'uaro', name: 'uaRO', rules: { baseMax: 99, jobMax: 70, maxStat: 99 }, itemOverrides: [] };
-const build = { classId: 'lord_knight', jobLevel: 70, baseStats: { STR: 99, AGI: 1, VIT: 1, INT: 1, DEX: 1, LUK: 1 } };
-let repository;
-const app = document.querySelector('#app');
+const build = { classId: 'lord_knight', jobLevel: 70, baseStats: { STR: 99, AGI: 1, VIT: 1, INT: 1, DEX: 1, LUK: 1 }, skills: {}, equipment: {} };
+const app = document.querySelector('#app'); const repository = JsonRepository.fromRuntime(profile);
 const link = (href, label) => `<a data-route href="${href}">${label}</a>`;
-
-function shell(content) {
-  const current = session();
-  return `<header><a data-route class="brand" href="/">RO Nexus</a><nav>${link('/uaro/', 'uaRO')} ${link('/uaro/calc', 'Calculator')} ${link('/uaro/db/items', 'Database')} ${link('/uaro/admin', 'Admin')}</nav><button id="auth">${current ? `Sign out · ${current.name}` : 'Demo admin login'}</button></header><main>${content}</main>`;
-}
+const skillTree = () => [...(window.RO_SKILLS.knight ?? []), ...(window.RO_SKILLS.lord_knight ?? [])];
+const skillPointsUsed = () => Object.values(build.skills).reduce((sum, value) => sum + value, 0);
+const skillPointsAvailable = () => Math.max(0, build.jobLevel - 1);
+function itemOptions(slot) { return [`<option value="">— Empty —</option>`, ...repository.items().filter((item) => item.equipLocations.includes(slot)).map((item) => `<option value="${item.id}" ${Number(build.equipment[slot]) === item.id ? 'selected' : ''}>${item.name}</option>`)].join(''); }
+function shell(content) { const current = session(); return `<header><a data-route class="brand" href="/">RO Nexus</a><nav>${link('/uaro/', 'uaRO')} ${link('/uaro/calc', 'Calculator')} ${link('/uaro/db/items', 'Database')}</nav><div class="account"><button id="account-button">${current ? current.name : 'Login'} ▾</button><div id="account-menu" hidden>${current ? `${link('/uaro/admin', 'Admin & overrides')}<button id="logout">Sign out</button>` : '<button id="login">Demo admin login</button>'}</div></div></header><main>${content}</main>`; }
 function calculatorView() {
-  const overview = calculateOverview(build, { statCap: profile.rules.maxStat });
-  return `<section class="panel"><p class="eyebrow">uaRO · Pre-Renewal</p><h1>Character calculator</h1><p class="muted">Base stats are strictly capped at ${PRE_RENEWAL_STAT_CAP}; job bonuses are shown separately and included in the total.</p><div class="form-grid">${PRIMARY_STATS.map((stat) => `<label>${stat}<input data-stat="${stat}" type="number" min="1" max="99" value="${overview.base[stat]}"><small>Base ${overview.base[stat]} + Job ${overview.job[stat]} = <b>${overview.total[stat]}</b></small></label>`).join('')}<label>Job level<input id="job-level" type="number" min="1" max="70" value="${build.jobLevel}"></label></div><p class="result">Stat points used: <b>${overview.statPointsUsed}</b></p></section>`;
+  const overview = calculateOverview(build, { statCap: profile.rules.maxStat }); const skills = skillTree();
+  return `<section class="panel calculator"><p class="eyebrow">uaRO · Pre-Renewal 99/70</p><h1>Character & Skill Simulator</h1><div class="calculator-grid"><div><h2>Base Stats</h2><div class="form-grid">${PRIMARY_STATS.map((stat) => `<label>${stat}<input data-stat="${stat}" type="number" min="1" max="99" value="${overview.base[stat]}"><small>${overview.base[stat]} base + ${overview.job[stat]} job = <b>${overview.total[stat]}</b></small></label>`).join('')}<label>Job level<input id="job-level" type="number" min="1" max="70" value="${build.jobLevel}"></label></div><p class="result">Stat points used: <b>${overview.statPointsUsed}</b></p><h2>Equipment</h2><div class="equipment-grid">${[['weapon','Weapon'],['head_top','Headgear'],['armor','Armor'],['garment','Garment'],['shoes','Shoes']].map(([slot,label]) => `<label>${label}<select data-equip="${slot}">${itemOptions(slot)}</select></label>`).join('')}</div></div><div><div class="skill-heading"><h2>Skill Planner</h2><b>${skillPointsUsed()} / ${skillPointsAvailable()} points</b></div><p class="muted">Job skill points are limited by the selected Job Level. Prerequisites are validated before a skill can be raised.</p><div class="skill-list">${skills.map((skill) => { const level = build.skills[skill.id] ?? 0; const prerequisitesMet = skill.req.every(([id, required]) => (build.skills[id] ?? 0) >= required); const canIncrease = level < skill.max && skillPointsUsed() < skillPointsAvailable() && prerequisitesMet; return `<article class="skill"><div><b>${skill.name}</b><small>${skill.group}${skill.req.length ? ` · Requires ${skill.req.map(([id, required]) => `${id.replaceAll('_', ' ')} ${required}`).join(', ')}` : ''}</small></div><div class="stepper"><button data-skill="${skill.id}" data-delta="-1" ${level === 0 ? 'disabled' : ''}>−</button><b>${level}/${skill.max}</b><button data-skill="${skill.id}" data-delta="1" ${canIncrease ? '' : 'disabled'}>+</button></div></article>`; }).join('')}</div></div></div></section>`;
 }
-function dashboard() { return `<section class="panel hero"><p class="eyebrow">${profile.name} server dashboard</p><h1>Pre-Renewal data, per server.</h1><p>Rates: 5× Base / 5× Job / 5× Drop · Level cap 99/70 · Server-specific overrides stay isolated from the core repository.</p>${link('/uaro/calc', 'Open the calculator →')}</section>`; }
-function home() { return `<section class="panel hero"><p class="eyebrow">Multi-tenant Ragnarok Online platform</p><h1>One core database. Server-specific truth.</h1><p>Select a server profile to browse its database, plan a character, and apply controlled admin overrides.</p>${link('/uaro/', 'Enter uaRO →')}</section>`; }
-function admin() { return isAdmin() ? `<section class="panel"><p class="eyebrow">uaRO administration</p><h1>Overrides</h1><p>Authenticated administrators can submit item, monster and drop overrides. Persistence and server-side authorization are the next backend phase.</p></section>` : `<section class="panel"><h1>Administrator verification required</h1><p>Use the demo login to preview the protected route.</p></section>`; }
-function render(route = parseRoute()) {
-  let content;
-  if (route.name === 'home') content = home();
-  else if (route.name === 'dashboard') content = dashboard();
-  else if (route.name === 'calc') content = calculatorView();
-  else if (route.name.startsWith('db/')) content = databaseView(repository, route.name.split('/')[1]);
-  else content = admin();
-  app.innerHTML = shell(content);
-  document.querySelector('#auth').addEventListener('click', () => { if (isAdmin()) signOut(); else signIn(); render(); });
-  document.querySelectorAll('[data-stat]').forEach((input) => input.addEventListener('input', (event) => { build.baseStats[event.target.dataset.stat] = Math.max(1, Math.min(99, Number.parseInt(event.target.value, 10) || 1)); render({ name: 'calc', serverName: 'uaro' }); }));
-  document.querySelector('#job-level')?.addEventListener('input', (event) => { build.jobLevel = Math.max(1, Math.min(70, Number.parseInt(event.target.value, 10) || 1)); render({ name: 'calc', serverName: 'uaro' }); });
-  bindDatabaseSearch(repository);
-}
-repository = JsonRepository.fromRuntime(profile);
-installRouter(render);
-render();
+function dashboard() { return `<section class="panel hero"><p class="eyebrow">${profile.name} server dashboard</p><h1>Pre-Renewal data, per server.</h1><p>Rates: 5× Base / 5× Job / 5× Drop · Level cap 99/70 · Server-specific overrides stay isolated from core records.</p>${link('/uaro/calc', 'Open simulator →')}</section>`; }
+function home() { return `<section class="panel hero"><p class="eyebrow">Multi-tenant Ragnarok Online platform</p><h1>One core database. Server-specific truth.</h1><p>Select a server profile to browse, plan a character, and compare equipment.</p>${link('/uaro/', 'Enter uaRO →')}</section>`; }
+function admin() { return isAdmin() ? `<section class="panel"><p class="eyebrow">uaRO administration</p><h1>Overrides</h1><p>Authenticated administrators can manage item, monster and drop overrides here. Backend persistence and authorization follow in the next phase.</p></section>` : `<section class="panel"><h1>Administrator verification required</h1><p>Open the Login menu to enter the demo administration area.</p></section>`; }
+function bindShell() { document.querySelector('#account-button').addEventListener('click', () => { const menu = document.querySelector('#account-menu'); menu.hidden = !menu.hidden; }); document.querySelector('#login')?.addEventListener('click', () => { signIn(); render(); }); document.querySelector('#logout')?.addEventListener('click', () => { signOut(); render(); }); }
+function bindCalculator() { document.querySelectorAll('[data-stat]').forEach((input) => input.addEventListener('input', (event) => { build.baseStats[event.target.dataset.stat] = Math.max(1, Math.min(99, Number.parseInt(event.target.value, 10) || 1)); render({ name: 'calc' }); })); document.querySelector('#job-level')?.addEventListener('input', (event) => { build.jobLevel = Math.max(1, Math.min(70, Number.parseInt(event.target.value, 10) || 1)); render({ name: 'calc' }); }); document.querySelectorAll('[data-skill]').forEach((button) => button.addEventListener('click', () => { const id = button.dataset.skill; const skill = skillTree().find((entry) => entry.id === id); const next = Math.max(0, Math.min(skill.max, (build.skills[id] ?? 0) + Number(button.dataset.delta))); if (next > (build.skills[id] ?? 0) && skillPointsUsed() >= skillPointsAvailable()) return; build.skills[id] = next; render({ name: 'calc' }); })); document.querySelectorAll('[data-equip]').forEach((select) => select.addEventListener('change', () => { build.equipment[select.dataset.equip] = select.value; })); }
+function render(route = parseRoute()) { let content = route.name === 'home' ? home() : route.name === 'dashboard' ? dashboard() : route.name === 'calc' ? calculatorView() : route.name.startsWith('db/') ? databaseView(repository, route.name.split('/')[1]) : admin(); app.innerHTML = shell(content); bindShell(); bindCalculator(); bindDatabaseSearch(repository); }
+installRouter(render); render();
