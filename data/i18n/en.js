@@ -1,0 +1,1 @@
+window.RO_I18N = {en:{appName:'RO Build Planner',preRenewal:'Pre-Renewal',server:'Server',new:'New',save:'Save',load:'Load',share:'Share',overview:'Overview',stats:'Stats',skills:'Skills',gear:'Equipment',database:'Database',notes:'Build Notes'}};
