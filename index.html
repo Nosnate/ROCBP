@@ -3,8 +3,14 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#090d16"><title>RO Nexus</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body><div id="app"></div><script type="module" src="src/main.js"></script></body>
+<body>
+  <div id="app"></div>
+  <!-- Classic scripts intentionally support opening index.html directly via file://. -->
+  <script src="data/core-pre-renewal/items.data.js"></script>
+  <script src="data/repository.js"></script><script src="src/calculator.js"></script>
+  <script src="src/router.js"></script><script src="src/auth.js"></script><script src="src/database.js"></script>
+  <script src="src/main.js"></script>
+</body>
 </html>

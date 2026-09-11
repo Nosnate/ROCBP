@@ -1,8 +1,8 @@
-import { calculateOverview, PRIMARY_STATS, PRE_RENEWAL_STAT_CAP } from './calculator.js';
-import { installRouter, parseRoute } from './router.js';
-import { databaseView, bindDatabaseSearch } from './database.js';
-import { isAdmin, signIn, signOut, session } from './auth.js';
-import { JsonRepository } from '../data/repository.js';
+const { calculateOverview, PRIMARY_STATS, PRE_RENEWAL_STAT_CAP } = window.ROCalculator;
+const { installRouter, parseRoute } = window.RORouter;
+const { databaseView, bindDatabaseSearch } = window.RODatabase;
+const { isAdmin, signIn, signOut, session } = window.ROAuth;
+const { JsonRepository } = window.RORepository;
 
 const profile = { id: 'uaro', name: 'uaRO', rules: { baseMax: 99, jobMax: 70, maxStat: 99 }, itemOverrides: [] };
 const build = { classId: 'lord_knight', jobLevel: 70, baseStats: { STR: 99, AGI: 1, VIT: 1, INT: 1, DEX: 1, LUK: 1 } };
@@ -34,6 +34,6 @@ function render(route = parseRoute()) {
   document.querySelector('#job-level')?.addEventListener('input', (event) => { build.jobLevel = Math.max(1, Math.min(70, Number.parseInt(event.target.value, 10) || 1)); render({ name: 'calc', serverName: 'uaro' }); });
   bindDatabaseSearch(repository);
 }
-repository = await JsonRepository.load(profile);
+repository = JsonRepository.fromRuntime(profile);
 installRouter(render);
 render();
